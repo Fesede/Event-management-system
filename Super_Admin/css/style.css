@@ -1,0 +1,211 @@
+/* ==================================================================
+   ST.RAGUEL SUPER ADMIN PORTAL - PREMIUM & CLEAN LAYOUT STYLE
+==================================================================
+*/
+
+:root {
+  --sidebar-width: 260px;
+  --header-height: 70px;
+  --primary-color: #be123c; /* የሱፐር አድሚን ልዩ ቀይ ቀለም */
+  --bg-dark-slate: #1e2530; /* የሳይድባር እና ሄደር ጥቁር ቀለም */
+  --text-main: #1e293b;
+  --bg-light: #f8fafc;
+}
+
+body {
+  background-color: var(--bg-light);
+  color: var(--text-main);
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==================================================================
+   1. 💻 DESKTOP LAYOUT (በትልልቅ ስክሪኖች ላይ የሚሰራ ቋሚ ሲኤስኤስ)
+   ================================================================== */
+
+/* የላይኛው ባር (Header) */
+.super-admin-header {
+  background: var(--bg-dark-slate) !important;
+  padding: 0 30px !important;
+  height: var(--header-height) !important;
+  border-bottom: 1px solid #2d3748 !important;
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: var(--sidebar-width) !important; /* 💡 ከሳይድባሩ ስፋት በኋላ እንዲጀምር ያደርገዋል */
+  width: calc(
+    100% - var(--sidebar-width)
+  ) !important; /* 💡 ሙሉ ስክሪኑን እንዳይዘጋ ስፋቱን ይገድበዋል */
+  z-index: 999 !important; /* ከሳይድባሩ በታች እንዲሆን ያደርገዋል */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+/* ዋናው የይዘት ሳጥን (Main Dashboard Wrapper) */
+.super-main-wrapper {
+  margin-left: var(
+    --sidebar-width
+  ) !important; /* 💡 ሳይድባሩ እንዳይጋርደው ወደ ቀኝ ገፍቶ ይይዘዋል */
+  padding-top: calc(
+    var(--header-height) + 25px
+  ) !important; /* ከሄደሩ ስር እንዲጀምር */
+  padding-left: 30px !important;
+  padding-right: 30px !important;
+  padding-bottom: 40px !important;
+  position: relative !important;
+  z-index: 1 !important;
+  min-height: 100vh;
+}
+
+/* የጎን ባር (Sidebar) */
+#sidebar {
+  width: var(--sidebar-width) !important;
+  min-width: var(--sidebar-width) !important;
+  max-width: var(--sidebar-width) !important;
+  background: var(--bg-dark-slate) !important;
+  color: #ffffff !important;
+  height: 100vh !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 1000 !important; /* 💡 ሁልጊዜ ከሄደሩ በላይ እንዲንሳፈፍ ያደርገዋል */
+  border-right: 1px solid #2d3748 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  flex-column: true;
+}
+
+/* ==================================================================
+   2. 元素 STYLING (የክፍሎች ውበት ማስተካከያ)
+   ================================================================== */
+
+.brand-wrapper {
+  border-bottom: 1px solid #2d3748;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+#sidebar .nav-link {
+  color: #a0aec0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+#sidebar .nav-link i {
+  width: 25px;
+  font-size: 1.1rem;
+}
+
+#sidebar .nav-link:hover,
+#sidebar .nav-link.active {
+  color: #ffffff !important;
+  background: var(--primary-color) !important;
+  border-left: 4px solid var(--primary-color);
+}
+
+/* የፕሮፋይል በተን ድሮፕዳውን መያዣ */
+.header-profile-dropdown {
+  position: relative !important;
+}
+
+.profile-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 6px 16px !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-menu {
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 210px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 1050 !important;
+}
+
+.dropdown-item {
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+}
+
+.btn-logout {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid transparent;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.btn-logout:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* ==================================================================
+   3. 📱 MOBILE RESPONSIVE (ለስልክ ስክሪን የሚሰራ ማስተካከያ)
+   ================================================================== */
+
+@media (max-width: 768px) {
+  .super-admin-header {
+    left: 0 !important;
+    width: 100% !important; /* በሞባይል ጊዜ ሄደሩ ሙሉ ስክሪን እንዲሆን */
+    padding: 0 15px !important;
+  }
+
+  .super-main-wrapper {
+    margin-left: 0 !important; /* በሞባይል ጊዜ ዳሽቦርዱ ወደ ግራ እንዲጠጋ */
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-top: calc(var(--header-height) + 20px) !important;
+  }
+
+  #sidebar {
+    transform: translateX(-100%) !important; /* ሳይድባሩን መደበቂያ */
+    transition: transform 0.3s ease !important;
+  }
+
+  #sidebar.show {
+    transform: translateX(0) !important; /* የሶስት መስመሩ ሲነካ እንዲመጣ */
+  }
+
+  /* ሳይድባሩ ሲመጣ ከበስተጀርባ የሚጋርደው ጥቁር ሼዶ */
+  #sidebarOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+  }
+
+  #sidebarOverlay.show {
+    display: block;
+  }
+}
