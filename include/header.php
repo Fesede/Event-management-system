@@ -16,13 +16,13 @@
 <body>
 
 <!-- NAVIGATION -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top site-navbar" aria-label="Main navigation">
     <div class="container">
         <a class="navbar-brand fw-bold" href="index.php">
-            <img src="assets/image/logo.png" alt="EventHub Logo" class="img-fluid" style="max-height: 40px;">
-             St. Raguel
+            <img src="assets/image/logo.png" alt="" class="site-navbar-logo">
+            <span>St. Raguel Church</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -32,7 +32,7 @@
                 <li class="nav-item"><a class="nav-link" href="News.php" id="nav-news">News</a></li>
                 <li class="nav-item"><a class="nav-link" href="events.php" id="nav-events">Events</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php" id="nav-contact">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="login.php" id="nav-contact">Login</a></li>
+                <li class="nav-item"><a class="nav-link site-login-link" href="login.php" id="nav-login"><i class="fa-solid fa-right-to-bracket me-2" aria-hidden="true"></i>Login</a></li>
                 <!-- LANGUAGE TOGGLE -->
                 <li class="nav-item ms-lg-3">
                     <button class="lang-btn" id="btn-am" onclick="changeLanguage('am')">አማርኛ</button>

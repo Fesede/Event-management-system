@@ -68,6 +68,93 @@ footer {
   color: #000;
   border-color: #ffc107;
 }
+
+/* Shared public-site navigation */
+.site-navbar {
+  background-color: #fff;
+  border-bottom: 1px solid rgba(30, 60, 114, 0.14);
+  box-shadow: 0 4px 18px rgba(30, 60, 114, 0.08);
+  padding: 0.7rem 0;
+}
+.site-navbar .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #1e3c72;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+.site-navbar-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+.site-navbar .navbar-nav {
+  gap: 0.2rem;
+}
+.site-navbar .nav-link {
+  color: var(--primary-blue);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.65rem 0.8rem;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+.site-navbar .nav-link:hover,
+.site-navbar .nav-link:focus {
+  color: #fff !important;
+  background-color: var(--primary-blue);
+  border-radius: 0.55rem;
+}
+.site-navbar .site-login-link {
+  color: #fff;
+  background-color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  border-radius: 0.55rem;
+  margin-left: 0.35rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+.site-navbar .site-login-link:hover,
+.site-navbar .site-login-link:focus {
+  color: #fff !important;
+  background-color: #152c55;
+  border-color: #152c55;
+}
+.site-navbar .lang-btn {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  margin-left: 0.25rem;
+  padding: 0.35rem 0.7rem;
+  font-weight: 600;
+}
+.site-navbar .lang-btn:hover {
+  color: #fff;
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+.site-navbar .lang-btn.active {
+  color: #fff;
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+.site-navbar .navbar-toggler {
+  border-color: var(--primary-blue);
+  padding: 0.4rem 0.65rem;
+}
+
+@media (max-width: 991.98px) {
+  .site-navbar .navbar-nav {
+    align-items: stretch !important;
+    gap: 0.15rem;
+    padding-top: 0.8rem;
+  }
+  .site-navbar .site-login-link {
+    margin: 0.2rem 0;
+  }
+  .site-navbar .nav-item.ms-lg-3 {
+    margin: 0.5rem 0 0;
+  }
+}
 .service-card {
   border: none;
   border-radius: 15px;
