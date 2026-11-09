@@ -1,4 +1,4 @@
--- Apply once to st_raguel to enable secure Android attendance app sign-in.
+-- Apply once to st_raguel to enable secure attendance phone app sign-in.
 USE `st_raguel`;
 
 CREATE TABLE IF NOT EXISTS attendance_api_tokens (

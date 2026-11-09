@@ -175,6 +175,13 @@ $active_tab = isset($active_tab) ? $active_tab : "dashboard";
                 </a>
             </li>
             <?php endif; ?>
+            <?php if ($attendance_role === 'attendance holder'): ?>
+            <li class="sidebar-item">
+                <a href="attendance-app.php" class="sidebar-link">
+                    <i class="fas fa-mobile-screen-button me-2"></i> Phone attendance app
+                </a>
+            </li>
+            <?php endif; ?>
             <li class="sidebar-item mt-4 pt-3 border-top border-secondary border-opacity-20">
                 <a href="../logout.php" class="sidebar-link text-danger" >
                     <i class="fas fa-sign-out-alt me-2"></i> ከሲስተሙ ውጣ (Logout)
