@@ -2,6 +2,11 @@
 $page_title = "Membership Dashboard";
 $active_tab = "dashboard"; 
 
+require_once 'includes/attendance.php';
+if (in_array($attendance_role, ['attendance holder', 'attendance controller'], true)) {
+    header('Location: attendance.php');
+    exit();
+}
 include 'includes/header.php'; 
 include 'includes/connect.php'; // Updated to map your global connection file path cleanly
 
@@ -11,12 +16,17 @@ $total_q = mysqli_query($conn, "SELECT COUNT(*) as total FROM members");
 $total_data = mysqli_fetch_assoc($total_q);
 $total_count = $total_data['total'] ?? 0;
 
-// Stat 2: Active Status Count (Updated to check status_work column fields matching your form definitions)
-$active_q = mysqli_query($conn, "SELECT COUNT(*) as active_total FROM members WHERE status_work='ተቀጥሬ እሰራለሁ' OR status_work='የግል ስራ' OR status_work='በስራ ላይ'");
+// Stat 2: Active membership status
+$active_q = mysqli_query($conn, "SELECT COUNT(*) as active_total FROM members WHERE membership_status='active'");
 $active_data = mysqli_fetch_assoc($active_q);
 $active_count = $active_data['active_total'] ?? 0;
 
-// Stat 3: Recent Enrollments within the last 30 days (Updated to use standard timestamp field created_at)
+// Stat 3: Inactive membership status
+$inactive_q = mysqli_query($conn, "SELECT COUNT(*) as inactive_total FROM members WHERE membership_status='inactive'");
+$inactive_data = mysqli_fetch_assoc($inactive_q);
+$inactive_count = $inactive_data['inactive_total'] ?? 0;
+
+// Stat 4: Recent enrollments within the last 30 days
 $recent_q = mysqli_query($conn, "SELECT COUNT(*) as recent_total FROM members WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)");
 $recent_data = mysqli_fetch_assoc($recent_q);
 $recent_count = $recent_data['recent_total'] ?? 0;
@@ -30,7 +40,7 @@ $recent_count = $recent_data['recent_total'] ?? 0;
 </div>
 
 <div class="row g-4 mb-5">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card card-custom p-4 border-0 shadow-sm">
             <div class="d-flex align-items-center">
                 <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 me-3">
@@ -44,21 +54,35 @@ $recent_count = $recent_data['recent_total'] ?? 0;
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card card-custom p-4 border-0 shadow-sm">
             <div class="d-flex align-items-center">
                 <div class="bg-success bg-opacity-10 text-success p-3 rounded-3 me-3">
                     <i class="fas fa-user-check fs-4"></i>
                 </div>
                 <div>
-                    <h6 class="text-secondary small fw-semibold text-uppercase mb-1">በስራ ላይ ያሉ (Active)</h6>
+                    <h6 class="text-secondary small fw-semibold text-uppercase mb-1">ንቁ አባላት (Active members)</h6>
                     <h3 class="fw-bold mb-0 text-success"><?php echo number_format($active_count); ?> <span class="fs-6 text-muted fw-normal">ሰው</span></h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
+        <div class="card card-custom p-4 border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <div class="bg-secondary bg-opacity-10 text-secondary p-3 rounded-3 me-3">
+                    <i class="fas fa-user-slash fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="text-secondary small fw-semibold text-uppercase mb-1">Inactive members</h6>
+                    <h3 class="fw-bold mb-0 text-secondary"><?php echo number_format($inactive_count); ?> <span class="fs-6 text-muted fw-normal">ሰው</span></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
         <div class="card card-custom p-4 border-0 shadow-sm">
             <div class="d-flex align-items-center">
                 <div class="bg-info bg-opacity-10 text-info p-3 rounded-3 me-3">
@@ -102,9 +126,13 @@ $recent_count = $recent_data['recent_total'] ?? 0;
                             <td><span class='font-monospace'>".htmlspecialchars($m['Phone_no'])."</span></td>
                             <td class='small text-muted'>".$formatted_date."</td>
                             <td class='text-end pe-4'>
+                                <a href='view_member.php?id=".$m['id']."' class='btn btn-sm btn-outline-secondary rounded-pill px-3 me-1'>
+                                    <i class='fas fa-eye me-1'></i> መመልከት
+                                </a>
+                                ".($can_manage_members ? "
                                 <a href='edit_member.php?id=".$m['id']."' class='btn btn-sm btn-outline-primary rounded-pill px-3'>
                                     <i class='fas fa-edit me-1'></i> መረጃ ቀይር
-                                </a>
+                                </a>" : "")."
                             </td>
                         </tr>";
                     }

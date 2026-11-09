@@ -1,6 +1,7 @@
 <?php
 // 1. DATABASE CONNECTION
-include 'include/conn.php';
+require_once 'include/user_admin_auth.php';
+require_once 'include/conn.php';
 
 // Check for valid user ID
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -34,10 +35,17 @@ if ($query_result && $query_result->num_rows > 0) {
 
 // 2. TRANSACTION UPDATE INTERCEPT LOGIC ENGINE
 if (isset($_POST['update_user'])) {
+    super_admin_validate_user_csrf();
     $fname  = trim($_POST['first_name']);
     $role   = $_POST['role'];
     $status = $_POST['status'];
     $cat    = $_POST['category']; // Reading the selected Category dropdown value
+
+    $allowed_roles = ['Admin', 'Editor', 'Super Admin', 'Members Manager', 'Attendance Controller', 'Attendance Holder', 'Members'];
+    if (!is_string($role) || !in_array($role, $allowed_roles, true)) {
+        http_response_code(400);
+        exit('Select a valid user role.');
+    }
 
     // Double-check: Force 'None' values to look clean if database requires specific casing
     if (strtolower($cat) == 'none') {
@@ -102,6 +110,7 @@ include 'include/nav.php';
                 <?php endif; ?>
                 
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(super_admin_user_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
                     <div class="mb-3">
                         <label class="form-label small fw-bold">First Name</label>
                         <input type="text" name="first_name" class="form-control" value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>" required>
@@ -125,6 +134,10 @@ include 'include/nav.php';
                             <option value="Admin" <?php if (($user['role'] ?? '') == 'Admin') echo 'selected'; ?>>Admin</option>
                             <option value="Editor" <?php if (($user['role'] ?? '') == 'Editor') echo 'selected'; ?>>Editor</option>
                             <option value="Super Admin" <?php if (($user['role'] ?? '') == 'Super Admin') echo 'selected'; ?>>Super Admin</option>
+                            <option value="Members Manager" <?php if (($user['role'] ?? '') == 'Members Manager') echo 'selected'; ?>>Members Manager</option>
+                            <option value="Attendance Controller" <?php if (($user['role'] ?? '') == 'Attendance Controller') echo 'selected'; ?>>Attendance Controller</option>
+                            <option value="Attendance Holder" <?php if (($user['role'] ?? '') == 'Attendance Holder') echo 'selected'; ?>>Attendance Holder</option>
+                            <option value="Members" <?php if (($user['role'] ?? '') == 'Members') echo 'selected'; ?>>Members (read only)</option>
                         </select>
                     </div>
                     

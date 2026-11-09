@@ -4,17 +4,16 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 🔒 SECURITY LAYER: If the user is not logged in or doesn't have member access permissions, kick them out to login.php
+require_once __DIR__ . '/attendance.php';
+
 if (!isset($_SESSION['user_role'])) {
     header("Location: ../login.php");
     exit();
 }
 
-$user_role_check = strtolower(trim($_SESSION['user_role']));
-if ($user_role_check !== 'members manager' && $user_role_check !== 'members') {
-    header("Location: ../login.php");
-    exit();
-}
+attendance_require_roles(['super admin', 'members manager', 'attendance controller', 'attendance holder', 'members']);
+
+$can_manage_members = in_array($attendance_role, ['super admin', 'members manager'], true);
 
 // Set fallback title strings if not predefined on the main rendering template page
 $page_title = isset($page_title) ? $page_title : "Members Management System";
@@ -162,11 +161,20 @@ $active_tab = isset($active_tab) ? $active_tab : "dashboard";
                     <i class="fas fa-chart-pie me-2"></i> ዳሽቦርድ (Dashboard)
                 </a>
             </li>
+            <?php if (!in_array($attendance_role, ['attendance holder', 'attendance controller'], true)): ?>
             <li class="sidebar-item">
                 <a href="members.php" class="sidebar-link <?php echo ($active_tab === 'members') ? 'active' : ''; ?>">
                     <i class="fas fa-users me-2"></i> የአባላት ዝርዝር (Members)
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($attendance_role !== 'members'): ?>
+            <li class="sidebar-item">
+                <a href="attendance.php" class="sidebar-link <?php echo ($active_tab === 'attendance') ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-check me-2"></i> Attendance
+                </a>
+            </li>
+            <?php endif; ?>
             <li class="sidebar-item mt-4 pt-3 border-top border-secondary border-opacity-20">
                 <a href="../logout.php" class="sidebar-link text-danger" >
                     <i class="fas fa-sign-out-alt me-2"></i> ከሲስተሙ ውጣ (Logout)
@@ -203,3 +211,8 @@ $active_tab = isset($active_tab) ? $active_tab : "dashboard";
     </nav>
 
     <main class="main-content">
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebarMenu').classList.toggle('show');
+        }
+    </script>

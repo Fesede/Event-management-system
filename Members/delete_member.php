@@ -1,28 +1,30 @@
 <?php
-session_start();
+require_once 'includes/attendance.php';
 include 'includes/connect.php';
 
-// 🔒 Security Layer: Deny unauthenticated routing calls straight to processing controllers
-if (!isset($_SESSION['user_role'])) {
-    header("Location: ../login.php"); 
-    exit();
+attendance_require_roles(['super admin', 'members manager']);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit('Use POST to deactivate a member.');
+}
+attendance_validate_csrf();
+
+$member_id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+if ($member_id === false || $member_id < 1) {
+    http_response_code(400);
+    exit('A valid member ID is required.');
 }
 
-// 🗑️ Handle explicit targeting parameter records cleanup routines
-if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $id = intval($_GET['id']);
-    
-    $delete_sql = "DELETE FROM members WHERE id = $id";
-    
-    if (mysqli_query($conn, $delete_sql)) {
-        header("Location: members.php?status=deleted_success");
-        exit();
-    } else {
-        header("Location: members.php?status=deleted_failed");
-        exit();
-    }
-} else {
-    header("Location: members.php");
-    exit();
+$stmt = $conn->prepare("UPDATE members SET membership_status = 'inactive' WHERE id = ?");
+if (!$stmt) {
+    http_response_code(500);
+    exit('Could not prepare the member deactivation: ' . attendance_escape($conn->error));
 }
-?>
+$stmt->bind_param('i', $member_id);
+if (!$stmt->execute()) {
+    http_response_code(500);
+    exit('Could not deactivate the member: ' . attendance_escape($stmt->error));
+}
+
+header('Location: members.php?status=deactivated');
+exit();

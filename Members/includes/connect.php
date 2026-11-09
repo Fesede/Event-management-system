@@ -1,12 +1,14 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "st_raguel";
+if (!isset($conn)) {
+    $host = "localhost";
+    $user = "root";
+    $pass = "";
+    $dbname = "st_raguel";
 
-$conn = mysqli_connect($host, $user, $pass, $dbname);
+    $conn = mysqli_connect($host, $user, $pass, $dbname);
 
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
 }
 ?>

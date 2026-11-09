@@ -2,12 +2,15 @@
 $page_title = "አዲስ አባል መመዝገቢያ ማዕከል | Add Member";
 $active_tab = "members"; 
 
+require_once 'includes/attendance.php';
+attendance_require_roles(['super admin', 'members manager']);
 include 'includes/header.php'; 
 include 'includes/connect.php'; 
 
 $error_msg = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    attendance_validate_csrf();
     function clean_input($data) {
         return htmlspecialchars(stripslashes(trim($data)));
     }
@@ -39,8 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($error_msg)) {
-        $sql = "INSERT INTO members (Photo, full_Name, Phone_no, kesitena_Name, town, Kefele_Ketema, Werda, school_level, status_work, type_work, Service_Selection, Emg_name, Emg_phone, Relationship) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO members (Photo, full_Name, Phone_no, kesitena_Name, town, Kefele_Ketema, Werda, school_level, status_work, type_work, Service_Selection, Emg_name, Emg_phone, Relationship, qr_token)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         if ($stmt = $conn->prepare($sql)) {
             $f_name   = clean_input($_POST['full_Name'] ?? '');
@@ -56,12 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $e_name   = clean_input($_POST['Emg_name'] ?? '');
             $e_phone  = clean_input($_POST['Emg_phone'] ?? '');
             $rel      = clean_input($_POST['Relationship'] ?? '');
+            $qr_token = bin2hex(random_bytes(16));
 
-            $stmt->bind_param("ssssssssssssss", 
+            $stmt->bind_param("sssssssssssssss",
                 $photo_db_path, $f_name, $p_no, $k_name, 
                 $twn, $k_ketema, $wrd, $s_level, 
                 $s_work, $t_work, $s_select, 
-                $e_name, $e_phone, $rel
+                $e_name, $e_phone, $rel, $qr_token
             );
 
             if ($stmt->execute()) {
@@ -95,6 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
 
         <form id="regForm" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+            <input type="hidden" name="csrf_token" value="<?php echo attendance_escape(attendance_csrf_token()); ?>">
             <div class="card card-custom p-4 p-md-5 border-0 shadow-sm mb-4">
                 <h5 class="fw-bold text-dark border-bottom pb-3 mb-4"><i class="fas fa-id-card text-primary me-2"></i>ክፍል ፩: የግል እና የክርስትና መረጃ</h5>
                 <div class="row g-4 align-items-center mb-4">

@@ -1,13 +1,22 @@
-<?php 
-include 'include/conn.php';
+<?php
+require_once 'include/user_admin_auth.php';
+require_once 'include/conn.php';
 
 // --- 2. አዲስ ተጠቃሚ የመመዝገብ ሎጅክ (Add User Logic) ---
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
+    super_admin_validate_user_csrf();
+    $allowed_roles = ['Admin', 'Editor', 'Super Admin', 'Members Manager', 'Attendance Controller', 'Attendance Holder', 'Members'];
+    $submitted_role = $_POST['role'] ?? '';
+    if (!is_string($submitted_role) || !in_array($submitted_role, $allowed_roles, true)) {
+        http_response_code(400);
+        exit('Select a valid user role.');
+    }
+
     $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
     $last_name  = mysqli_real_escape_string($conn, $_POST['last_name']);
     $email      = mysqli_real_escape_string($conn, $_POST['email']);
     $category   = mysqli_real_escape_string($conn, $_POST['category']);
-    $role       = mysqli_real_escape_string($conn, $_POST['role']);
+    $role       = mysqli_real_escape_string($conn, $submitted_role);
     $password   = password_hash($_POST['password'], PASSWORD_DEFAULT);
     
     // የፎቶ መጫኛ ማስተናገጃ (Photo Upload)
@@ -162,6 +171,7 @@ include 'include/nav.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(super_admin_user_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="modal-body p-4">
                     <div class="row g-3 mb-3">
                         <div class="col-6">
@@ -198,6 +208,10 @@ include 'include/nav.php';
                                 <option value="Editor">Editor</option>
                                 <option value="Admin">Admin</option>
                                 <option value="Super Admin">Super Admin</option>
+                                <option value="Members Manager">Members Manager</option>
+                                <option value="Attendance Controller">Attendance Controller</option>
+                                <option value="Attendance Holder">Attendance Holder</option>
+                                <option value="Members">Members (read only)</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">

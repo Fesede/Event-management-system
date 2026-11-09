@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F8FAFC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="St. Raguel Attendance"
+            android:textColor="#0F172A"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:text="Sign in with your Attendance Holder account."
+            android:textColor="#334155"
+            android:background="#E2E8F0" />
+
+        <LinearLayout
+            android:id="@+id/loginPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="16dp">
+
+            <EditText
+                android:id="@+id/serverUrlInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Website URL (HTTPS)"
+                android:inputType="textUri"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/emailInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Attendance Holder email"
+                android:inputType="textEmailAddress"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Sign in" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/attendancePanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Your assigned sessions"
+                android:textColor="#0F172A"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/sessionSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:minHeight="48dp" />
+
+            <Button
+                android:id="@+id/refreshButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Refresh sessions" />
+
+            <androidx.camera.view.PreviewView
+                android:id="@+id/cameraPreview"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="8dp"
+                android:background="#0F172A"
+                app:implementationMode="compatible" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Scan the member QR code inside the check-in window."
+                android:textColor="#475569" />
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Sign out" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

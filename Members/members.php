@@ -2,6 +2,8 @@
 $page_title = "የአባላት ስም ዝርዝር መዝገብ | Members Directory";
 $active_tab = "members"; 
 
+require_once 'includes/attendance.php';
+attendance_require_roles(['super admin', 'members manager', 'members']);
 // Include local modular layout structure templates and global database connections
 include 'includes/header.php'; 
 include 'includes/connect.php'; // Maps your data connection strings cleanly
@@ -17,6 +19,8 @@ if (isset($_GET['status'])) {
         $success_msg = "የአባሉ መረጃ በተሳካ ሁኔታ ተሻሽሏል! (Member records updated!)";
     } elseif ($_GET['status'] === 'deleted_success') {
         $success_msg = "አባሉ ከመዝገብ ላይ በቋሚነት ተሰርዟል! (Member dropped successfully!)";
+    } elseif ($_GET['status'] === 'deactivated') {
+        $success_msg = "Member deactivated. Existing attendance history has been retained.";
     } elseif ($_GET['status'] === 'deleted_failed') {
         $error_msg = "አባሉን ከመዝገብ ላይ ለማጥፋት ሲሞከር ስህተት አጋጥሟል!";
     }
@@ -28,11 +32,11 @@ if (isset($_GET['status'])) {
         <h2 class="fw-bold text-dark mb-1">የአባላት ሙሉ ዝርዝር መዝገብ</h2>
         <p class="text-muted mb-0">በሲስተሙ ውስጥ የተመዘገቡ አባላትን መረጃ እዚህ ያስተዳድሩ፣ ይፈልጉ ወይም ያሻሽሉ።</p>
     </div>
-    <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+    <?php if ($can_manage_members): ?><div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
         <a href="add_member.php" class="btn btn-primary rounded-pill px-4 py-2 small fw-semibold">
             <i class="fas fa-user-plus me-2"></i> አዲስ አባል መዝግብ
         </a>
-    </div>
+    </div><?php endif; ?>
 </div>
 
 <?php if (!empty($success_msg)): ?>
@@ -94,6 +98,7 @@ if (isset($_GET['status'])) {
                                 if(!empty($row['kesitena_Name'])) {
                                     echo "<small class='text-primary fw-medium'><i class='fas fa-cross me-1 small'></i>የክርስትና ስም፦ ".htmlspecialchars($row['kesitena_Name'])."</small>";
                                 }
+                        $membership_status = $row['membership_status'] ?? 'active';
                         echo "</td>
                             <td><span class='text-dark small font-monospace'><i class='fas fa-phone-alt me-1 text-muted opacity-50'></i>".htmlspecialchars($row['Phone_no'])."</span></td>
                             <td class='small text-muted'>
@@ -101,21 +106,18 @@ if (isset($_GET['status'])) {
                                 <small class='text-secondary'>ወረዳ፦ ".htmlspecialchars($row['Werda'])."</small>
                             </td>
                             <td>
-                                <span class='badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 small fw-medium'>
+                                <span class='badge ".($membership_status === 'active' ? "bg-success-subtle text-success border-success-subtle" : "bg-secondary-subtle text-secondary border-secondary-subtle")." border rounded-pill px-2.5 py-1 small fw-medium'>
                                     <i class='fas fa-briefcase me-1 small'></i>".$work_status." (".$work_type.")
                                 </span>
+                                <small class='d-block mt-1 text-muted'>".htmlspecialchars(ucfirst($membership_status))."</small>
                             </td>
                             <td class='text-end pe-4'>
                                 <div class='btn-group' role='group'>
                                     <a href='view_member.php?id=".$row['id']."' class='btn btn-light btn-sm text-info border-0 rounded-circle me-1' title='ሙሉ ማህደር ተመልከት'>
                                         <i class='fas fa-eye'></i>
                                     </a>
-                                    <a href='edit_member.php?id=".$row['id']."' class='btn btn-light btn-sm text-primary border-0 rounded-circle me-1' title='መረጃ ቀይር'>
-                                        <i class='fas fa-edit'></i>
-                                    </a>
-                                    <a href='delete_member.php?id=".$row['id']."' class='btn btn-light btn-sm text-danger border-0 rounded-circle' title='ከመዝገብ አጥፋ' onclick='return confirm(\"እርግጠኛ ነዎት ይህንን አባል ከሲስተሙ ላይ በቋሚነት መሰረዝ ይፈልጋሉ?\");'>
-                                        <i class='fas fa-trash'></i>
-                                    </a>
+                                    ".($can_manage_members ? "<a href='edit_member.php?id=".$row['id']."' class='btn btn-light btn-sm text-primary border-0 rounded-circle me-1' title='መረጃ ቀይር'><i class='fas fa-edit'></i></a>" : "")."
+                                    ".($can_manage_members ? "<form method='post' action='delete_member.php' class='d-inline' onsubmit='return confirm(\"Deactivate this member? Their attendance history will be retained.\");'><input type='hidden' name='csrf_token' value='".attendance_escape(attendance_csrf_token())."'><input type='hidden' name='id' value='".(int)$row['id']."'><button type='submit' class='btn btn-light btn-sm text-danger border-0 rounded-circle' title='Deactivate member'><i class='fas fa-user-slash'></i></button></form>" : "")."
                                 </div>
                             </td>
                         </tr>";
@@ -127,9 +129,9 @@ if (isset($_GET['status'])) {
                                 <i class='fas fa-folder-open d-block text-secondary opacity-50 mb-3 display-5'></i>
                                 <h5 class='fw-semibold text-dark mb-1'>ምንም የተመዘገበ አባል የለም</h5>
                                 <p class='text-muted small mb-3'>በአሁኑ ሰዓት በሲስተሙ ውስጥ ምንም የአባል መረጃ ዝርዝር አልተገኘም።</p>
-                                <a href='add_member.php' class='btn btn-sm btn-primary rounded-pill px-3'>
+                                ".($can_manage_members ? "<a href='add_member.php' class='btn btn-sm btn-primary rounded-pill px-3'>
                                     <i class='fas fa-user-plus me-1'></i> የመጀመሪያውን አባል እዚህ ይመዝግቡ
-                                </a>
+                                </a>" : "")."
                             </div>
                         </td>
                     </tr>";
@@ -139,4 +141,3 @@ if (isset($_GET['status'])) {
         </table>
     </div>
 </div>
-

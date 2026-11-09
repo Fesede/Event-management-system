@@ -16,7 +16,7 @@ if (isset($_SESSION['user_role'])) {
     } elseif ($current_role === 'store manager') {
         header("Location: Store_Manager/dashboard.php");
         exit();
-    } elseif ($current_role === 'members manager' || $current_role === 'members') {
+    } elseif (in_array($current_role, ['members manager', 'members', 'attendance controller', 'attendance holder'], true)) {
         header("Location: Members/dashboard.php");
         exit();
     }
@@ -56,7 +56,7 @@ if (isset($_POST['login'])) {
     }
     else {
         // 🔄 DYNAMIC CHECK: Look up Admins and Super Admins from the database
-        $sql = "SELECT id, email, password, role FROM users WHERE email = ?";
+        $sql = "SELECT id, email, password, role FROM users WHERE email = ? AND status = 'active'";
         $result = $conn->prepare($sql);
         $result->bind_param("s", $email);
         $result->execute();
@@ -81,7 +81,7 @@ if (isset($_POST['login'])) {
                     } elseif ($userRole === 'super admin') {
                         header("Location: Super_Admin/admin.php");
                         exit();
-                    } elseif ($userRole === 'members manager' || $userRole === 'members') {
+                    } elseif (in_array($userRole, ['members manager', 'members', 'attendance controller', 'attendance holder'], true)) {
                         header("Location: Members/dashboard.php");
                         exit();
                     } else {

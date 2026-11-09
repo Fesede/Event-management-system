@@ -2,6 +2,8 @@
 $page_title = "የአባል መረጃ ማሻሻያ ማዕከል | Edit Profile";
 $active_tab = "members"; 
 
+require_once 'includes/attendance.php';
+attendance_require_roles(['super admin', 'members manager']);
 include 'includes/header.php'; 
 include 'includes/connect.php'; 
 
@@ -22,6 +24,7 @@ if (!$member) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    attendance_validate_csrf();
     function clean_input($data) {
         return htmlspecialchars(stripslashes(trim($data)));
     }
@@ -67,15 +70,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $e_name   = clean_input($_POST['Emg_name'] ?? '');
         $e_phone  = clean_input($_POST['Emg_phone'] ?? '');
         $rel      = clean_input($_POST['Relationship'] ?? '');
+        $membership_status = $_POST['membership_status'] ?? '';
 
-        $update_sql = "UPDATE members SET Photo=?, full_Name=?, Phone_no=?, kesitena_Name=?, town=?, Kefele_Ketema=?, Werda=?, school_level=?, status_work=?, type_work=?, Service_Selection=?, Emg_name=?, Emg_phone=?, Relationship=? WHERE id=?";
+        if (!in_array($membership_status, ['active', 'inactive'], true)) {
+            $error_msg = 'Select a valid membership status.';
+        }
+
+        $update_sql = "UPDATE members SET Photo=?, full_Name=?, Phone_no=?, kesitena_Name=?, town=?, Kefele_Ketema=?, Werda=?, school_level=?, status_work=?, type_work=?, Service_Selection=?, Emg_name=?, Emg_phone=?, Relationship=?, membership_status=? WHERE id=?";
         
-        if ($stmt = $conn->prepare($update_sql)) {
-            $stmt->bind_param("ssssssssssssssi", 
+        if ($error_msg === '' && $stmt = $conn->prepare($update_sql)) {
+            $stmt->bind_param("sssssssssssssssi",
                 $photo_db_path, $f_name, $p_no, $k_name, 
                 $twn, $k_ketema, $wrd, $s_level, 
                 $s_work, $t_work, $s_select, 
-                $e_name, $e_phone, $rel, $id
+                $e_name, $e_phone, $rel, $membership_status, $id
             );
 
             if ($stmt->execute()) {
@@ -107,6 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
 
         <form id="regForm" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+            <input type="hidden" name="csrf_token" value="<?php echo attendance_escape(attendance_csrf_token()); ?>">
             <div class="card card-custom p-4 p-md-5 border-0 shadow-sm mb-4">
                 <h5 class="fw-bold text-dark border-bottom pb-3 mb-4"><i class="fas fa-user-edit text-primary me-2"></i>የአባሉ መለያ መረጃ ማስተካከያ</h5>
                 <div class="row g-4 align-items-center">
@@ -159,6 +168,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="card card-custom p-4 p-md-5 border-0 shadow-sm mb-5">
                 <h5 class="fw-bold text-dark border-bottom pb-3 mb-4"><i class="fas fa-user-shield text-primary me-2"></i>የድንገተኛ ተጠሪ መረጃ</h5>
                 <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold text-secondary">Membership status</label>
+                        <select name="membership_status" class="form-select" required>
+                            <option value="active" <?php echo ($member['membership_status'] ?? 'active') === 'active' ? 'selected' : ''; ?>>Active</option>
+                            <option value="inactive" <?php echo ($member['membership_status'] ?? '') === 'inactive' ? 'selected' : ''; ?>>Inactive</option>
+                        </select>
+                    </div>
                     <div class="col-md-4"><label class="form-label small fw-semibold text-secondary">የተጠሪ ስም *</label><input type="text" name="Emg_name" class="form-control" value="<?php echo htmlspecialchars($member['Emg_name']); ?>" required style="border-radius:8px;"></div>
                     <div class="col-md-4"><label class="form-label small fw-semibold text-secondary">የተጠሪ ስልክ *</label><input type="tel" name="Emg_phone" class="form-control" value="<?php echo htmlspecialchars($member['Emg_phone']); ?>" required style="border-radius:8px;"></div>
                     <div class="col-md-4"><label class="form-label small fw-semibold text-secondary">ዝምድና *</label><input type="text" name="Relationship" class="form-control" value="<?php echo htmlspecialchars($member['Relationship']); ?>" required style="border-radius:8px;"></div>
